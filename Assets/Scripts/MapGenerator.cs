@@ -23,8 +23,11 @@ public class MapGenerator : MonoBehaviour
 
     List<Coord> allTileCoords;
     Queue<Coord> shuffledTileCoords;
-    
 
+    // access all the open tiles
+    // (then,) so that there won't be any obstacle, so enemy can be generated on it
+    Transform[,] tileMap;
+    Queue<Coord> shuffledOpenTileCoords;
 
 
     private void Start()
@@ -36,6 +39,8 @@ public class MapGenerator : MonoBehaviour
     public void GenerateMap() {
         currentMap = maps[mapIndex];
         System.Random prng = new System.Random(currentMap.seed);
+
+        tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
 
         GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, 0.05f, currentMap.mapSize.y * tileSize);
 
@@ -51,7 +56,6 @@ public class MapGenerator : MonoBehaviour
 
         //shuffle the list of coords
         shuffledTileCoords = new Queue<Coord>(Utility.ShuffleArrays(allTileCoords.ToArray(), currentMap.seed));
-
 
         //put all generated tiles in a new Gameobject
         string holderName = "Generated Map";
@@ -73,11 +77,17 @@ public class MapGenerator : MonoBehaviour
                 newTile.localScale = Vector3.one * (1 - outlinePercent) * tileSize;
                 newTile.name = "Tile [" + x + "," + y + "]";
                 newTile.parent = mapHolder;
+
+                //put all the tiles in the map
+                tileMap[x, y] = newTile;
             }
         }
 
         //create random obstacles and put on the tiles
         bool[,] obsctaleMap = new bool[currentMap.mapSize.x, currentMap.mapSize.y];
+
+        //stores only the coordinates of open tiles
+        List<Coord> allOpenCoords = new List<Coord>(allTileCoords);
 
         int obstacleCount = (int)(currentMap.mapSize.x * currentMap.mapSize.y * currentMap.obstaclePercent);
         int currentObstacleCount = 0;
@@ -104,6 +114,11 @@ public class MapGenerator : MonoBehaviour
                 float colorPercent = randomCoord.y / (float)currentMap.mapSize.y;
                 obstacleMaterial.color = Color.Lerp(currentMap.foregroundColour, currentMap.backgroundColour, colorPercent);
                 obstacleRenderer.sharedMaterial = obstacleMaterial;
+
+
+                //used for random spawn location of enemies
+                //delete the coordinates of the random place, so we store only open tiles
+                allOpenCoords.Remove(randomCoord);
             }
             //if the obstacle creation is rejected
             else
@@ -112,6 +127,10 @@ public class MapGenerator : MonoBehaviour
                 currentObstacleCount--;
             }
         }
+
+
+        //shuffle the tiles
+        shuffledOpenTileCoords = new Queue<Coord>(Utility.ShuffleArrays(allOpenCoords.ToArray(), currentMap.seed));
 
 
         navmeshFloor.localScale = new Vector3(maxMapSize.x, maxMapSize.y, 1) * tileSize;
@@ -186,9 +205,19 @@ public class MapGenerator : MonoBehaviour
     }
 
 
+    //Get the position in [x, y, z] from a Coordinate[x, y]
     Vector3 CoordToPosition(int x, int y) {
         Vector3 position = new Vector3(-currentMap.mapSize.x / 2f + 0.5f + x, 0, -currentMap.mapSize.y / 2f + 0.5f + y) * tileSize;
         return position;
+    }
+
+    //Get the Coordinate[x, y] = tile, from player's position in [x, y, z]
+    public Transform GetTileFromPosition(Vector3 position) {
+        int x = Mathf.RoundToInt((int)(position.x / tileSize) + (currentMap.mapSize.x - 1) / 2f);
+        int y = Mathf.RoundToInt((int)(position.z / tileSize) + (currentMap.mapSize.y - 1) / 2f);
+        x = Mathf.Clamp(x, 0, tileMap.GetLength(0) -1);
+        y = Mathf.Clamp(y, 0, tileMap.GetLength(1) -1);
+        return tileMap[x, y];
     }
 
     //Whole queue is random, so just pick the first item,
@@ -197,6 +226,14 @@ public class MapGenerator : MonoBehaviour
         Coord randomCoord = shuffledTileCoords.Dequeue();
         shuffledTileCoords.Enqueue(randomCoord);
         return randomCoord;
+    }
+
+
+    public Transform GetRandomOpenTile()
+    {
+        Coord randomCoord = shuffledOpenTileCoords.Dequeue();
+        shuffledOpenTileCoords.Enqueue(randomCoord);
+        return tileMap[randomCoord.x, randomCoord.y];
     }
 
 
