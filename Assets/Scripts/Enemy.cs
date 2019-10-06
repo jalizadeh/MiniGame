@@ -30,6 +30,10 @@ public class Enemy : LivingEntity
     //enemy's damage power
     int damage = 1;
 
+
+    public ParticleSystem deathEffect;
+
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -150,5 +154,14 @@ public class Enemy : LivingEntity
             }
             yield return new WaitForSeconds(refreshRate);
         }
+    }
+
+
+    public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
+    {
+        if (damage >= health) {
+            Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)), deathEffect.startLifetime);
+        }
+        base.TakeHit(damage, hitPoint, hitDirection);
     }
 }

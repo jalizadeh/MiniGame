@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
 
         Collider[] initialCollisions = Physics.OverlapSphere(transform.position, 0.1f, collisionLayer);
         if (initialCollisions.Length > 0) {
-            OnHitObject(initialCollisions[0]);
+            OnHitObject(initialCollisions[0], transform.position);
         }
     }
 
@@ -44,30 +44,18 @@ public class Projectile : MonoBehaviour
 
         if(Physics.Raycast(ray, out hit, distance + skinWidth, collisionLayer, QueryTriggerInteraction.Collide))
         {
-            OnHitObject(hit);
+            OnHitObject(hit.collider, hit.point);
         }
     }
 
 
-    void OnHitObject(RaycastHit hit) {
-        //print(hit.transform.gameObject.name);
-        IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
-        if(damageableObject != null) //make sure this item can be damaged, like enemy
-        {
-            damageableObject.TakeHit(damage, hit);
-        }
-
-        //if the projectile hit an object, it is destroyed
-        GameObject.Destroy(gameObject);
-    }
-
-    void OnHitObject(Collider c)
+    void OnHitObject(Collider c, Vector3 hitPosition)
     {
         //print(hit.transform.gameObject.name);
         IDamageable damageableObject = c.GetComponent<IDamageable>();
         if (damageableObject != null) //make sure this item can be damaged, like enemy
         {
-            damageableObject.TakeDamage(damage);
+            damageableObject.TakeHit(damage, hitPosition, transform.forward);
         }
 
         //if the projectile hit an object, it is destroyed
