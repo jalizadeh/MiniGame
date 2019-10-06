@@ -31,12 +31,15 @@ public class Spawner : MonoBehaviour
     //if the player dies, disable enemy spawning
     bool isDisabled;
 
+    //generate new map with new wave
+    public event System.Action<int> OnNewWave;
 
     // Start is called before the first frame update
     void Start()
     {
         player = FindObjectOfType<Player>();
         playerT = player.transform;
+        campPositionOld = playerT.position;
         nextCampCheckTime = timeBetweenCampingChecks + Time.time;
         player.OnDeath += onPlayerDeath;
 
@@ -99,6 +102,11 @@ public class Spawner : MonoBehaviour
         isDisabled = true;
     }
 
+    //on each new wave, the player goes back to the center of the map
+    void ResetPlayerPosition() {
+        playerT.position = map.GetTileFromPosition(Vector3.zero).position + Vector3.up * 3;
+    }
+
     void OnEnemyDeath() {
         enemiesAreAlive--;
         if (enemiesAreAlive == 0)
@@ -113,6 +121,11 @@ public class Spawner : MonoBehaviour
 
             enemiesRemainingToSpawn = currentWave.enemyCount;
             enemiesAreAlive = currentWave.enemyCount;
+
+            if (OnNewWave != null)
+                OnNewWave(currentWaveNumber);
+
+            ResetPlayerPosition();
         }
     }
 
