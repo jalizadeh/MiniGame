@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -34,29 +35,34 @@ public class Enemy : LivingEntity
     public ParticleSystem deathEffect;
 
 
+    //it will run before Start()
+    public void Awake()
+    {
+        pathfinder = GetComponent<NavMeshAgent>();
+
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            hasTarget = true;
+
+            //who the enemy is going to chase
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+            targetEntity = target.GetComponent<LivingEntity>();
+
+            //get the radius sizes
+            targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+            enemyCollisionRadius = GetComponent<CapsuleCollider>().radius;
+        }
+    }
+
     // Start is called before the first frame update
     protected override void Start()
     {
         // run Start() in `LivingEntity` first, then this Start()
         base.Start(); 
-
-        pathfinder = GetComponent<NavMeshAgent>();
         
-        //the enemy color changes while attacking
-        skinMaterial = GetComponent<Renderer>().material;
-        originlColor = skinMaterial.color;
-
-        if (GameObject.FindGameObjectWithTag("Player") != null)
+        if (hasTarget)
         {
-            //who the enemy is going to chase
-            hasTarget = true;
-            target = GameObject.FindGameObjectWithTag("Player").transform;
-            targetEntity = target.GetComponent<LivingEntity>();
             targetEntity.OnDeath += OnTargetDeath;
-
-            //get the radius sizes
-            targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
-            enemyCollisionRadius = GetComponent<CapsuleCollider>().radius;
 
             //set the default state of enemy
             currentEnemyState = State.Chasing;
@@ -135,6 +141,18 @@ public class Enemy : LivingEntity
 
         currentEnemyState = State.Chasing;
         pathfinder.enabled = true;
+    }
+
+    public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, float enemyHealth, Color skinColor)
+    {
+        pathfinder.speed = moveSpeed;
+        damage = Mathf.CeilToInt(targetEntity.startingHealth / hitsToKillPlayer);
+        startingHealth = enemyHealth;
+
+        //the enemy's base color which changes while attacking
+        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial.color = skinColor;
+        originlColor = skinMaterial.color;
     }
 
     IEnumerator UpdateFixed()

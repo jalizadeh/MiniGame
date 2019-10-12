@@ -11,6 +11,7 @@ public class MapGenerator : MonoBehaviour
     public Transform tilePrefab;
     public Transform obstaclePrefab;
     public Transform navmeshFloor;
+    public Transform mapFloor;
     public Transform navmeshMaskPrefab;
 
     //public Vector2 mapSize;
@@ -46,8 +47,6 @@ public class MapGenerator : MonoBehaviour
         System.Random prng = new System.Random(currentMap.seed);
 
         tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
-
-        GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, 0.05f, currentMap.mapSize.y * tileSize);
 
         //put all the coords in a list
         allTileCoords = new List<Coord>();
@@ -137,8 +136,9 @@ public class MapGenerator : MonoBehaviour
         //shuffle the tiles
         shuffledOpenTileCoords = new Queue<Coord>(Utility.ShuffleArrays(allOpenCoords.ToArray(), currentMap.seed));
 
-
+        //set the sizes of floors
         navmeshFloor.localScale = new Vector3(maxMapSize.x, maxMapSize.y, 1) * tileSize;
+        mapFloor.localScale = new Vector3(currentMap.mapSize.x * tileSize, currentMap.mapSize.y * tileSize, 0.05f);
 
         //-The masks used for navMesh--------------------
         Transform maskLeft = Instantiate(navmeshMaskPrefab, Vector3.left * (currentMap.mapSize.x + maxMapSize.x) / 4f * tileSize, Quaternion.identity) as Transform;

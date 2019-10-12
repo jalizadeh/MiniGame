@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    //if activated, by pressing Enter, the current wave (level) is skipped
+    public bool devMode;
+
     public Wave[] waves;
     public Enemy enemy;
 
@@ -57,15 +60,34 @@ public class Spawner : MonoBehaviour
             {
                 nextCampCheckTime = timeBetweenCampingChecks + Time.time;
 
-                isCamping = Vector3.Distance(playerT.position, campPositionOld) > campThresholdDistance;
+                isCamping = Vector3.Distance(playerT.position, campPositionOld) < campThresholdDistance;
+                campPositionOld = playerT.position;
             }
 
-            if (enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime)
+            if ((enemiesRemainingToSpawn > 0 || currentWave.infinite) && Time.time > nextSpawnTime)
             {
                 enemiesRemainingToSpawn--;
                 nextSpawnTime = Time.time + currentWave.timeBetweenSpawn;
 
-                StartCoroutine(SpawnEnemy());
+                StartCoroutine("SpawnEnemy");
+            }
+        }
+
+
+        /*
+         * If I press "Enter", it will skip to next map
+         * 1. stop generating new enemies
+         * 2. destroty all current enemies
+         * 3. start next wave
+         */
+        if (devMode) {
+            if (Input.GetKeyDown(KeyCode.Return)) {
+                StopCoroutine("SpawnEnemy");
+                foreach (Enemy enemy in FindObjectsOfType<Enemy>()) {
+                    GameObject.Destroy(enemy.gameObject);
+                }
+
+                NextWave();
             }
         }
     }
@@ -95,6 +117,8 @@ public class Spawner : MonoBehaviour
 
         Enemy spawnedEnemy = Instantiate(enemy, spawnTile.position + Vector3.up, Quaternion.identity) as Enemy;
         spawnedEnemy.OnDeath += OnEnemyDeath;
+        spawnedEnemy.SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer,
+            currentWave.enemyHealth, currentWave.skinColor);
     }
 
 
@@ -131,7 +155,13 @@ public class Spawner : MonoBehaviour
 
     [System.Serializable]
     public class Wave{
+        public bool infinite;
         public int enemyCount;
         public float timeBetweenSpawn;
+
+        public float moveSpeed;
+        public int hitsToKillPlayer;
+        public float enemyHealth;
+        public Color skinColor;
     }
 }
