@@ -115,6 +115,9 @@ public class Spawner : MonoBehaviour
             yield return null;
         }
 
+        //at the, reset the color, unless it may not come back completely to it's initial color
+        tileMat.color = initialColor;
+
         Enemy spawnedEnemy = Instantiate(enemy, spawnTile.position + Vector3.up, Quaternion.identity) as Enemy;
         spawnedEnemy.OnDeath += OnEnemyDeath;
         spawnedEnemy.SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer,

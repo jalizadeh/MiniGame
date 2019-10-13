@@ -45,4 +45,19 @@ public class GunController : MonoBehaviour
             return weaponHold.position.y;
         }
     }
+
+
+    //More precise look-at mechanism
+    public void Aim(Vector3 aimPoint) {
+        if (equippedGun != null)
+            equippedGun.Aim(aimPoint);
+    }
+
+
+    //Reload the gun
+    public void Reload()
+    {
+        if (equippedGun != null)
+            equippedGun.Reload();
+    }
 }
