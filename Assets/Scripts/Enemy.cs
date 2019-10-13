@@ -150,7 +150,7 @@ public class Enemy : LivingEntity
         startingHealth = enemyHealth;
 
         //the enemy's base color which changes while attacking
-        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial = GetComponent<Renderer>().sharedMaterial;
         skinMaterial.color = skinColor;
         originlColor = skinMaterial.color;
     }

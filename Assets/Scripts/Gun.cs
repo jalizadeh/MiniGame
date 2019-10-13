@@ -105,6 +105,12 @@ public class Gun : MonoBehaviour
         }
     }
 
+    // if I press "G", it shoots for ever
+    public void OnAutoShoot()
+    {
+        Shoot();
+    }
+
     public void OnTriggerHold() {
         Shoot();
         triggerReleasedSinceLastShot = false;

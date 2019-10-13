@@ -15,13 +15,25 @@ public class Player : LivingEntity
 
     public Crosshairs crosshair;
 
+
+    private void Awake()
+    {
+        controller = GetComponent<PlayerController>();
+        gunController = GetComponent<GunController>();
+        viewCamera = Camera.main;
+        FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
+    }
+
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start(); // run Start() in `LivingEntity` first, then this Start()
-        controller = GetComponent<PlayerController>();
-        gunController = GetComponent<GunController>();
-        viewCamera = Camera.main;
+    }
+
+
+    void OnNewWave(int waveNumber) {
+        health = startingHealth;
+        gunController.EquipGun(waveNumber - 1);
     }
 
     // Update is called once per frame
@@ -73,6 +85,20 @@ public class Player : LivingEntity
         if (Input.GetKeyDown(KeyCode.R))
         {
             gunController.Reload();
+        }
+
+        // GOD mode, auto shoot, no need for holding mouse button
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            StartCoroutine(AutoShoot());
+        }
+    }
+
+    IEnumerator AutoShoot() {
+        while (true)
+        {
+            gunController.OnAutoShoot();
+            yield return null;
         }
     }
 }
