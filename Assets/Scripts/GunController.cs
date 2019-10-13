@@ -36,4 +36,13 @@ public class GunController : MonoBehaviour
             equippedGun.OnTriggerReleased();
     }
 
+
+    //Get the Y-position of the gun
+    public float GunHeight
+    {
+        get
+        {
+            return weaponHold.position.y;
+        }
+    }
 }

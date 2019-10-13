@@ -13,6 +13,8 @@ public class Player : LivingEntity
 
     Camera viewCamera;
 
+    public Crosshairs crosshair;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -33,7 +35,7 @@ public class Player : LivingEntity
 
         // Look at mouse position
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        Plane groundPlane = new Plane(Vector3.up, Vector3.forward * gunController.GunHeight);
         float rayDistance;
 
         if(groundPlane.Raycast(ray, out rayDistance))
@@ -42,6 +44,9 @@ public class Player : LivingEntity
             //Debug.DrawLine(ray.origin, point, Color.red);
 
             controller.LookAt(point);
+
+            crosshair.transform.position = point;
+            crosshair.DetectTarget(ray);
         }
 
 

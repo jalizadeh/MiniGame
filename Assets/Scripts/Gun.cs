@@ -73,4 +73,5 @@ public class Gun : MonoBehaviour
         //reload the gun
         shotsRemainingBurst = burstCount;
     }
+
 }
