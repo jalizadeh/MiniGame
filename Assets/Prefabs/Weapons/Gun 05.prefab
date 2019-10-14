@@ -249,6 +249,8 @@ MonoBehaviour:
   burstCount: 3
   shell: {fileID: 4667121040531889198, guid: e8f5a15c0bed71b47b81e02dc9dab3e1, type: 3}
   shellEjection: {fileID: 1779105933229038016}
+  shootSound: {fileID: 8300000, guid: e421ec6be87692c45ba9677f536a860b, type: 3}
+  reloadSound: {fileID: 8300000, guid: 12a6d39af86779b4fadc1dfeacd21fdc, type: 3}
   recoilKickMinMax: {x: 0.05, y: 0.2}
   recoilAngleMinMax: {x: 3, y: 5}
   recoidMoveSettleTime: 0.1
