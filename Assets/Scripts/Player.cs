@@ -101,4 +101,10 @@ public class Player : LivingEntity
             yield return null;
         }
     }
+
+    public override void Die()
+    {
+        AudioManager.instance.PlaySound("Player Death", transform.position);
+        base.Die();
+    }
 }
