@@ -9,9 +9,10 @@ public class AudioManager : MonoBehaviour
     public static AudioManager instance;
     SoundLibrary library;
 
-    float masterVolumePercent = 1f;
-    float sfxVolumePercent = 1f;
-    float musicVolumePercent = 1f;
+    //these variables can be get globally, but can be set only locally
+    public float masterVolumePercent { get; private set; }
+    public float sfxVolumePercent { get; private set; }
+    public float musicVolumePercent { get; private set; }
 
     AudioSource[] musicSources;
     AudioSource sfx2DSource;
@@ -54,12 +55,16 @@ public class AudioManager : MonoBehaviour
 
 
             audioListener = FindObjectOfType<AudioListener>().transform;
-            playerT = FindObjectOfType<Player>().transform;
+
+            if (FindObjectOfType<Player>() != null)
+            {
+                playerT = FindObjectOfType<Player>().transform;
+            }
 
             //load the previous settings from preferrences
-            masterVolumePercent = PlayerPrefs.GetFloat("master vol", masterVolumePercent);
-            sfxVolumePercent = PlayerPrefs.GetFloat("master vol", sfxVolumePercent);
-            musicVolumePercent = PlayerPrefs.GetFloat("master vol", musicVolumePercent);
+            masterVolumePercent = PlayerPrefs.GetFloat("master vol", 1f);
+            sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", 1f);
+            musicVolumePercent = PlayerPrefs.GetFloat("music vol", 1f);
         }
     }
 
@@ -89,8 +94,9 @@ public class AudioManager : MonoBehaviour
 
         //save the latest settings
         PlayerPrefs.SetFloat("master vol", masterVolumePercent);
-        PlayerPrefs.SetFloat("master vol", sfxVolumePercent);
-        PlayerPrefs.SetFloat("master vol", musicVolumePercent);
+        PlayerPrefs.SetFloat("sfx vol", sfxVolumePercent);
+        PlayerPrefs.SetFloat("music vol", musicVolumePercent);
+        PlayerPrefs.Save();
     }
 
     public void PlaySound(AudioClip clip, Vector3 position) {

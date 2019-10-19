@@ -34,6 +34,8 @@ public class Enemy : LivingEntity
 
     public ParticleSystem deathEffect;
 
+    //public static event System.Action 
+
 
     //it will run before Start()
     public void Awake()
