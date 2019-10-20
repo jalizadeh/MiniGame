@@ -92,6 +92,11 @@ public class Player : LivingEntity
         {
             StartCoroutine(AutoShoot());
         }
+
+        if(transform.position.y < -5)
+        {
+            TakeDamage(health);
+        }
     }
 
     IEnumerator AutoShoot() {

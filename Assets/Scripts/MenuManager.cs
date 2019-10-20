@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour
     //load saved data from player's preferences
     private void Start()
     {
+        print("hi start");
         activeScreenResIndex = PlayerPrefs.GetInt("screen res index");
         bool isFullscreen = (PlayerPrefs.GetInt("fullscreen") == 1) ? true : false;
 
@@ -34,6 +35,7 @@ public class MenuManager : MonoBehaviour
         volumeSliders[1].value = AudioManager.instance.musicVolumePercent;
         volumeSliders[2].value = AudioManager.instance.sfxVolumePercent;
     }
+
 
     public void Play() {
         SceneManager.LoadScene("Game");
@@ -59,15 +61,15 @@ public class MenuManager : MonoBehaviour
     {
         if (resolutionToggles[i].isOn)
         {
+            print("activeScreenResIndex: " + activeScreenResIndex + " / " + "i: " + i);
+            activeScreenResIndex = i;
+
             float aspectRatio = 16 / 9f;
             Screen.SetResolution(screenWidths[i], (int)(screenWidths[i] / aspectRatio), false);
-            activeScreenResIndex = i;
 
             PlayerPrefs.SetInt("screen res index", activeScreenResIndex);
             PlayerPrefs.Save();
         }
-
-        print("activeScreenResIndex: " + activeScreenResIndex + " / " + "i: " + i);
     }
 
     public void SetFullcreaan(bool isFullscreen)

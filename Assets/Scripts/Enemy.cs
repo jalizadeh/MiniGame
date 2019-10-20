@@ -34,7 +34,7 @@ public class Enemy : LivingEntity
 
     public ParticleSystem deathEffect;
 
-    //public static event System.Action 
+    public static event System.Action OnDeathStatic;
 
 
     //it will run before Start()
@@ -149,11 +149,16 @@ public class Enemy : LivingEntity
     public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, float enemyHealth, Color skinColor)
     {
         pathfinder.speed = moveSpeed;
-        damage = Mathf.CeilToInt(targetEntity.startingHealth / hitsToKillPlayer);
+
+        if (hasTarget)
+            damage = Mathf.CeilToInt(targetEntity.startingHealth / hitsToKillPlayer);
+
         startingHealth = enemyHealth;
 
         //the enemy's base color which changes while attacking
-        skinMaterial = GetComponent<Renderer>().sharedMaterial;
+        deathEffect.startColor = new Color(skinColor.r, skinColor.g, skinColor.b, 1);
+
+        skinMaterial = GetComponent<Renderer>().material;
         skinMaterial.color = skinColor;
         originlColor = skinMaterial.color;
     }
@@ -184,6 +189,11 @@ public class Enemy : LivingEntity
 
         //dies only when the health is <1
         if (damage >= health) {
+            if(OnDeathStatic != null)
+            {
+                OnDeathStatic();
+            }
+
             Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)), deathEffect.startLifetime);
 
             AudioManager.instance.PlaySound("Enemy Death", transform.position);

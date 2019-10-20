@@ -8,15 +8,26 @@ public class GameUI : MonoBehaviour
 {
 
     public Image fade;
+
+    [Header("Game Over UI")]
     public GameObject gameOver;
+    public Text gameOverScore;
 
     [Header("New Wave UI")]
     public RectTransform newWaveBanner;
     public Text newWaveTitle;
     public Text newWaveEnemiesCount;
 
+    [Header("Health Bar & Score")]
+    public Text score;
+    public RectTransform healthBar;
+
+    Player player;
+
     //to access each new wave
     Spawner spawner;
+
+
 
     private void Awake()
     {
@@ -28,10 +39,22 @@ public class GameUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FindObjectOfType<Player>().OnDeath += OnGameOver;
+        player = FindObjectOfType<Player>();
+        player.OnDeath += OnGameOver;
     }
 
 
+    private void Update()
+    {
+        score.text = ScoreKeeper.score.ToString("D6");
+
+        float healthPercent = 0;
+        if (player != null)
+        {
+            healthPercent = player.health / player.startingHealth;
+        }
+        healthBar.localScale = new Vector3(healthPercent, 1, 1);
+    }
 
 
     public void OnNewWave(int waveNumber) {
@@ -77,7 +100,10 @@ public class GameUI : MonoBehaviour
 
 
     void OnGameOver() {
-        StartCoroutine(Fade(Color.clear, Color.black, 1));
+        StartCoroutine(Fade(Color.clear, new Color(0, 0, 0, 0.95f), 1));
+        score.gameObject.SetActive(false);
+        healthBar.gameObject.SetActive(false);
+        gameOverScore.text = score.text;
         gameOver.SetActive(true);
     }
 
@@ -93,7 +119,12 @@ public class GameUI : MonoBehaviour
     }
 
 
-    public void StartNewGame() {
-        SceneManager.LoadScene("SampleScene");
+    public void PlayAgain() {
+        SceneManager.LoadScene("Game");
+    }
+
+    public void Menu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }

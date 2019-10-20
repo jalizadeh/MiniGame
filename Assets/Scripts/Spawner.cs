@@ -148,6 +148,7 @@ public class Spawner : MonoBehaviour
         }
 
         currentWaveNumber++;
+
         if (currentWaveNumber - 1 < waves.Length)
         {
             currentWave = waves[currentWaveNumber - 1];
