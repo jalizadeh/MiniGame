@@ -120,6 +120,7 @@ public class GameUI : MonoBehaviour
 
 
     public void PlayAgain() {
+
         SceneManager.LoadScene("Game");
     }
 

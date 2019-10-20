@@ -30,8 +30,8 @@ public class Gun : MonoBehaviour
     //for gun shooting animation
     public Vector2 recoilKickMinMax = new Vector2(0.05f, 0.2f);
     public Vector2 recoilAngleMinMax = new Vector2(3, 5);
-    public float recoidMoveSettleTime = 0.1f;
-    public float recoidRotationSettleTime = 0.1f;
+    public float recoilMoveSettleTime = 0.1f;
+    public float recoilRotationSettleTime = 0.1f;
     Vector3 recoidSmoothDampVelocity;
     float recoilRotationSmoothDampVelocity;
     float recoilAngle;
@@ -40,7 +40,7 @@ public class Gun : MonoBehaviour
     [Header("Gun Reload")]
     public int projectilesPerMag = 10;
     int remainingProjectiles;
-    public float reloatTime = 0.3f;
+    public float reloadTime = 0.3f;
     bool isReloading;
     public float maxReloadAngle = 10f;
 
@@ -56,8 +56,8 @@ public class Gun : MonoBehaviour
     //used "LateUpdate" to make sure all changes happen after "Aim()"
     private void LateUpdate()
     {
-        transform.localPosition = Vector3.SmoothDamp(transform.localPosition, Vector3.zero, ref recoidSmoothDampVelocity, recoidMoveSettleTime);
-        recoilAngle = Mathf.SmoothDamp(recoilAngle, 0, ref recoilRotationSmoothDampVelocity, recoidRotationSettleTime);
+        transform.localPosition = Vector3.SmoothDamp(transform.localPosition, Vector3.zero, ref recoidSmoothDampVelocity, recoilMoveSettleTime);
+        recoilAngle = Mathf.SmoothDamp(recoilAngle, 0, ref recoilRotationSmoothDampVelocity, recoilRotationSettleTime);
         transform.localEulerAngles = transform.localEulerAngles + Vector3.left * recoilAngle;
 
         //auto-reload
@@ -145,7 +145,7 @@ public class Gun : MonoBehaviour
     IEnumerator ReloadAnimation() {
         isReloading = true;
 
-        float speed = 1 / reloatTime;
+        float speed = 1 / reloadTime;
         float percent = 0f;
         Vector3 initialRotation = transform.localEulerAngles;
 
